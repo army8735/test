@@ -50,11 +50,13 @@ function exec(list) {
   }
   // 组合数量从小到大[3, list.length]
   for(let num = 3, len = list.length; num <= len; num++) {
+    // console.log(num);
     // newCache最终付给老cache供下次使用，节省空间
     let sumNewCache = new Map();
     let selNewCache = new Map();
     // 先拿到num数量的组合列表，里面每项存的都是数组下标列表
-    let indexesList = getCombListIndex(list.length, num); console.log(num, len, indexesList.length);
+    let indexesList = getCombListIndex(list.length, num);
+    // console.log(num, len, indexesList.length);
     let indexes;
     for(let i = 0, len2 = indexesList.length; i < len2; i++) {
       // 目前只尝试前num-1数量的和是否等于剩下的最后一个，TODO: num-n是否等于剩下n个
@@ -75,7 +77,8 @@ function exec(list) {
         let preSum = sumCache.get(key);
         // console.log(num, selCache.has(key));
         let target = list[sumIndex];
-        let sel = preSel + '{=}' + target.k; console.log(sel);
+        let sel = preSel + '{=}' + target.k;
+        // console.log(sel);
         let res;
         if(resHash.has(sel)) {
           res = resHash.get(sel);
@@ -93,7 +96,7 @@ function exec(list) {
         else {
           res.notEq++;
         }
-        // 最后一个时次序正常为下轮循环做缓存准备
+        // 最后一个时次序正常为下轮循环做缓存准备，同时整体最后一次无需为下轮循环做准备
         if(j === num - 1 && num < len) {
           key = indexes.toString();
           sel = preSel + '{+}' + target.k;

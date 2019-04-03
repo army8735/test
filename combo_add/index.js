@@ -20,8 +20,9 @@ if(cluster.isMaster) {
   let length = data.length;
 
   for(let i = 0; i < numCPUs && i < length; i++) {
-    newProcess();
+    // newProcess();
   }
+  single();
 
   function newProcess() {
     if(index >= length) {
@@ -54,7 +55,7 @@ if(cluster.isMaster) {
     });
     worker.on('exit', () => {
       count++;
-      console.log(count, length);
+      console.log('exit', count, length);
       if(count === length) {
         console.warn('fin', resHash.size);
         for(let [sel, res] of resHash) {
@@ -74,6 +75,22 @@ if(cluster.isMaster) {
       index,
       value: list,
     }));
+  }
+
+  function single() {
+    data.forEach((list, i) => {
+      // console.log(i);
+      resHash = calculate.exec(list);
+    });
+    console.warn('size ' + resHash.size);
+    for(let [sel, res] of resHash) {
+      if(res.eq > res.notEq && res.notEq > 0) {
+        let ratio = res.eq / (res.eq + res.notEq);
+        if(ratio > 0.5) {
+          console.log(res, sel);
+        }
+      }
+    }
   }
 }
 else if(cluster.isWorker) {
