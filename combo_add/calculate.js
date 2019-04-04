@@ -1,7 +1,7 @@
 const Bignumber = require('bignumber.js');
 
 let comboCache = new Map();
-let resHash = new Map();
+let resHash = Object.create(null);
 
 function getCombListIndex(length, num) {
   if (num < 2 || num > length) {
@@ -52,15 +52,16 @@ function exec(list) {
   for(let num = 3, len = list.length; num <= len; num++) {
     // console.log(num);
     // newCache最终付给老cache供下次使用，节省空间
-    let sumNewCache = new Map();
     let selNewCache = new Map();
+    let sumNewCache = new Map();
     // 先拿到num数量的组合列表，里面每项存的都是数组下标列表
     let indexesList = getCombListIndex(list.length, num);
-    // console.log(num, len, indexesList.length);
+    // console.log(num, len, indexesList);
     let indexes;
     for(let i = 0, len2 = indexesList.length; i < len2; i++) {
       // 目前只尝试前num-1数量的和是否等于剩下的最后一个，TODO: num-n是否等于剩下n个
       indexes = indexesList[i];
+      // console.log(indexes);
       // 由于有num个数，任选其中一个作为和，其它作为加数
       let sumIndex;
       let addIndex;
@@ -80,15 +81,15 @@ function exec(list) {
         let sel = preSel + '{=}' + target.k;
         // console.log(sel);
         let res;
-        if(resHash.has(sel)) {
-          res = resHash.get(sel);
+        if(resHash[sel]) {
+          res = resHash[sel];
         }
         else {
           res = {
             eq: 0,
             notEq: 0,
           };
-          resHash.set(sel, res);
+          resHash[sel] = res;
         }
         if(preSum.eq(target.v)) {
           res.eq++;

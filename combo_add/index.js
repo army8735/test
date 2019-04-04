@@ -19,10 +19,12 @@ if(cluster.isMaster) {
   let count = 0;
   let length = data.length;
 
+  let start = Date.now();
+
   for(let i = 0; i < numCPUs && i < length; i++) {
-    // newProcess();
+    newProcess();
   }
-  single();
+  // single();
 
   function newProcess() {
     if(index >= length) {
@@ -30,26 +32,27 @@ if(cluster.isMaster) {
     }
     let list = data[index++];
     let worker = cluster.fork();
-    worker.on('message', (msg) => {
-      let json = JSON.parse(msg);
+    worker.on('message', (json) => {
       if(json.type === 1) {
-        let [sel, res] = json.v;
-        let obj;
-        if(resHash.has(sel)) {
-          obj = resHash.get(sel);
-        }
-        else {
-          obj = {
-            eq: 0,
-            notEq: 0,
-            idx: [],
-          };
-          resHash.set(sel, obj);
-        }
-        obj.eq += res.eq;
-        obj.notEq += res.notEq;
-        if(res.notEq) {
-          obj.idx.push(json.index);
+        let res = json.v;
+        for(let sel in res) {
+          let obj;
+          if(resHash.has(sel)) {
+            obj = resHash.get(sel);
+          }
+          else {
+            obj = {
+              eq: 0,
+              notEq: 0,
+              idx: [],
+            };
+            resHash.set(sel, obj);
+          }
+          obj.eq += res.eq;
+          obj.notEq += res.notEq;
+          if(res.notEq) {
+            obj.idx.push(json.index);
+          }
         }
       }
     });
@@ -57,8 +60,10 @@ if(cluster.isMaster) {
       count++;
       console.log('exit', count, length);
       if(count === length) {
-        console.warn('fin', resHash.size);
+        console.warn('fin', resHash.size, Date.now() - start);
+        let list = [];
         for(let [sel, res] of resHash) {
+          list.push(sel);
           if(res.eq > res.notEq && res.notEq > 0) {
             let ratio = res.eq / (res.eq + res.notEq);
             if(ratio > 0.5) {
@@ -66,24 +71,28 @@ if(cluster.isMaster) {
             }
           }
         }
+        list.sort();
+        fs.writeFileSync(path.join(__dirname, 'multi.txt'), list.join('\n'), { encoding: 'utf-8' });
         return;
       }
       newProcess();
     });
-    worker.send(JSON.stringify({
+    worker.send({
       type: 1,
       index,
       value: list,
-    }));
+    });
   }
 
   function single() {
     data.forEach((list, i) => {
-      // console.log(i);
+      console.log(i);
       resHash = calculate.exec(list);
     });
-    console.warn('size ' + resHash.size);
+    console.warn('size ' + resHash.size, Date.now() - start);
+    let list = [];
     for(let [sel, res] of resHash) {
+      list.push(sel);
       if(res.eq > res.notEq && res.notEq > 0) {
         let ratio = res.eq / (res.eq + res.notEq);
         if(ratio > 0.5) {
@@ -91,22 +100,22 @@ if(cluster.isMaster) {
         }
       }
     }
+    list.sort();
+    fs.writeFileSync(path.join(__dirname, 'single.txt'), list.join('\n'), { encoding: 'utf-8' });
   }
 }
 else if(cluster.isWorker) {
-  process.on('message', function(msg) {
-    let json = JSON.parse(msg);
+  process.on('message', function(json) {
     if(json.type === 1) {
       let list = json.value;
       let res = calculate.exec(list);
-      for(let item of res) {
-        process.send(JSON.stringify({
-          type: 1,
-          index: json.index,
-          v: item,
-        }));
-      }
-      process.exit();
+      process.send({
+        type: 1,
+        index: json.index,
+        v: res,
+      }, () => {
+        process.exit();
+      });
     }
   });
 }
