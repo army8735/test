@@ -22,9 +22,9 @@ if(cluster.isMaster) {
   let start = Date.now();
 
   for(let i = 0; i < numCPUs && i < length; i++) {
-    newProcess();
+    // newProcess();
   }
-  // single();
+  single();
 
   function newProcess() {
     if(index >= length) {
@@ -90,18 +90,18 @@ if(cluster.isMaster) {
       resHash = calculate.exec(list);
     });
     console.warn('size ' + resHash.size, Date.now() - start);
-    let list = [];
-    for(let [sel, res] of resHash) {
-      list.push(sel);
-      if(res.eq > res.notEq && res.notEq > 0) {
-        let ratio = res.eq / (res.eq + res.notEq);
-        if(ratio > 0.5) {
-          console.log(res, sel);
-        }
-      }
-    }
-    list.sort();
-    fs.writeFileSync(path.join(__dirname, 'single.txt'), list.join('\n'), { encoding: 'utf-8' });
+    // let list = [];
+    // for(let [sel, res] of resHash) {
+    //   list.push(sel);
+    //   if(res.eq > res.notEq && res.notEq > 0) {
+    //     let ratio = res.eq / (res.eq + res.notEq);
+    //     if(ratio > 0.5) {
+    //       console.log(res, sel);
+    //     }
+    //   }
+    // }
+    // list.sort();
+    // fs.writeFileSync(path.join(__dirname, 'single.txt'), list.join('\n'), { encoding: 'utf-8' });
   }
 }
 else if(cluster.isWorker) {

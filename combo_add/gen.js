@@ -3,7 +3,7 @@ const path = require('path');
 
 let s = '';
 
-for(let i = 0; i < 30; i++) {
+for(let i = 0; i < 20000; i++) {
   let list = [];
   for(let j = 0; j < 7; j++) {
     let o = {};
@@ -11,6 +11,7 @@ for(let i = 0; i < 30; i++) {
     // for(let j = 0; j < 5; j++) {
     //   k += k;
     // }
+    k += '-------------------------------------====================================';
     o.k = k + i;
     o.v = j;
     list.push(o);
