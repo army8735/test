@@ -1,8 +1,11 @@
-node_modules
-.DS_Store
-.nyc_output
-coverage
-*.log
-.cache
-.idea/
+# Created by .ignore support plugin (hsz.mobi)
+logs/
+*.log*
+node_modules/
 reports/
+coverage/
+.idea/
+.DS_Store
+*.swp
+test/**/script.js
+index.min.js*

@@ -1,7 +1,49 @@
 {
-  "name": "test",
-  "version": "1.0.0",
+  "name": "karas",
+  "version": "0.16.4",
+  "description": "A flexible JavaScript framework for graphics programming on Canvas/Svg.",
+  "maintainers": [
+    {
+      "name": "army8735",
+      "email": "army8735@qq.com"
+    }
+  ],
+  "scripts": {
+    "build": "rollup -c rollup.config.js",
+    "dev": "rollup -c rollup.config.js --watch",
+    "test": "gulp build-test && nightwatch --filter test.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/karasjs/karas.git"
+  },
   "dependencies": {
-    "bignumber.js": "^8.1.1"
-  }
+    "selenite": "~0.3.2",
+    "yurine": "~0.3.0"
+  },
+  "devDependencies": {
+    "@babel/core": "^7.4.3",
+    "@babel/plugin-proposal-class-properties": "^7.5.5",
+    "@babel/preset-env": "^7.4.3",
+    "chromedriver": "^79.0.0",
+    "expect.js": "^0.3.1",
+    "gulp": "^4.0.0",
+    "gulp-rename": "^1.4.0",
+    "gulp-util": "^3.0.8",
+    "mocha": "^6.2.2",
+    "nightwatch": "^1.1.0",
+    "rollup": "^1.21.2",
+    "rollup-plugin-babel": "^4.3.3",
+    "rollup-plugin-sourcemaps": "^0.4.2",
+    "rollup-plugin-uglify": "^6.0.3",
+    "selenium-server": "^3.141.59",
+    "through2": "^3.0.0"
+  },
+  "main": "./index",
+  "engines": {
+    "node": ">=10.0.0"
+  },
+  "license": "MIT",
+  "readmeFilename": "README.md",
+  "author": "army8735 <army8735@qq.com>"
 }
